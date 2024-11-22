@@ -176,3 +176,38 @@ button:hover {
         padding: 0.2rem 0.6rem;
     }
 }
+#joystick-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: none; /* יוצג רק במכשירים ניידים */
+}
+
+#joystick-base {
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    position: relative;
+}
+
+#joystick-stick {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+/* הצג ג'ויסטיק רק במכשירים ניידים */
+@media (hover: none) and (pointer: coarse) {
+    #joystick-container {
+        display: block;
+    }
+}
