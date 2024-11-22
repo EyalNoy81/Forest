@@ -60,8 +60,18 @@ class Game {
         this.sounds = {};
         this.images = {};
         
-        this.init();
-    }
+          
+    this.joystick = {
+        active: false,
+        baseX: 0,
+        baseY: 0,
+        stickX: 0,
+        stickY: 0,
+        maxDistance: 35
+    };
+    
+    this.init();
+}
 
     init() {
         this.setupCanvas();
@@ -119,36 +129,36 @@ class Game {
             }
             this.mouseControl = false; // מעבר לשליטת מקלדת
         });
-
+    
         window.addEventListener('keyup', (e) => {
             if (this.keys.hasOwnProperty(e.code)) {
                 this.keys[e.code] = false;
             }
         });
-
-        // הוספת מאזיני עכבר חדשים
+    
+        // מאזיני עכבר
         this.canvas.addEventListener('mousemove', (e) => {
             const rect = this.canvas.getBoundingClientRect();
             this.mouseX = e.clientX - rect.left;
             this.mouseY = e.clientY - rect.top;
-            this.mouseControl = true; // מעבר לשליטת עכבר
+            this.mouseControl = true;
         });
-
+    
         this.canvas.addEventListener('mouseenter', () => {
             this.mouseActive = true;
         });
-
+    
         this.canvas.addEventListener('mouseleave', () => {
             this.mouseActive = false;
         });
-
-        // הוספת תמיכה במסכי מגע
+    
+        // מאזיני מגע בסיסיים
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             this.mouseControl = true;
             this.mouseActive = true;
         });
-
+    
         this.canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
             const rect = this.canvas.getBoundingClientRect();
@@ -156,29 +166,65 @@ class Game {
             this.mouseX = touch.clientX - rect.left;
             this.mouseY = touch.clientY - rect.top;
         });
-
+    
         this.canvas.addEventListener('touchend', () => {
             this.mouseActive = false;
         });
-
-
+    
+        // מאזיני ג'ויסטיק חדשים
+        const stick = document.getElementById('joystick-stick');
+        const base = document.getElementById('joystick-base');
+    
+        const handleStart = (e) => {
+            this.joystick.active = true;
+            const touch = e.type === 'mousedown' ? e : e.touches[0];
+            const baseRect = base.getBoundingClientRect();
+            this.joystick.baseX = baseRect.left + baseRect.width / 2;
+            this.joystick.baseY = baseRect.top + baseRect.height / 2;
+            this.updateJoystickPosition(touch);
+        };
+    
+        const handleMove = (e) => {
+            if (!this.joystick.active) return;
+            e.preventDefault();
+            const touch = e.type === 'mousemove' ? e : e.touches[0];
+            this.updateJoystickPosition(touch);
+        };
+    
+        const handleEnd = () => {
+            this.joystick.active = false;
+            stick.style.transform = 'translate(-50%, -50%)';
+            this.joystick.stickX = 0;
+            this.joystick.stickY = 0;
+        };
+    
+        // הוספת מאזיני ג'ויסטיק למגע ועכבר
+        stick.addEventListener('mousedown', handleStart);
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('mouseup', handleEnd);
+    
+        stick.addEventListener('touchstart', handleStart);
+        document.addEventListener('touchmove', handleMove);
+        document.addEventListener('touchend', handleEnd);
+    
+        // מאזיני כפתורים קיימים
         document.getElementById('startGame').addEventListener('click', () => {
             this.startGame();
         });
-
+    
         document.getElementById('restartGame').addEventListener('click', () => {
             this.resetGame();
             this.startGame();
         });
-
+    
         document.getElementById('ballColor').addEventListener('change', (e) => {
             this.playerBall.color = e.target.value;
         });
-
+    
         document.getElementById('exitGame').addEventListener('click', () => {
             this.exitGame();
         });
-
+    
         document.querySelectorAll('.difficulty-select button').forEach(button => {
             button.addEventListener('click', (e) => {
                 const newDifficulty = e.target.dataset.difficulty;
@@ -577,18 +623,22 @@ class Game {
 
 
     updatePlayerPosition() {
-        if (this.mouseControl && this.mouseActive) {
+        const speed = 7;
+        
+        if (this.joystick.active) {
+            // שליטה בג'ויסטיק
+            this.playerBall.x += this.joystick.stickX * speed;
+            this.playerBall.y += this.joystick.stickY * speed;
+        } else if (this.mouseControl && this.mouseActive) {
             // שליטה בעכבר
             const targetX = this.mouseX;
             const targetY = this.mouseY;
             
-            // תנועה חלקה לעבר העכבר
             const dx = targetX - this.playerBall.x;
             const dy = targetY - this.playerBall.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance > 5) { // מניעת רעידות קטנות
-                const speed = 7;
+            if (distance > 5) {
                 const moveX = (dx / distance) * speed;
                 const moveY = (dy / distance) * speed;
                 
@@ -596,22 +646,40 @@ class Game {
                 this.playerBall.y += moveY;
             }
         } else {
-            // שליטה במקלדת (הקוד הקיים)
-            const speed = 7;
+            // שליטה במקלדת
             if (this.keys.ArrowLeft) this.playerBall.x -= speed;
             if (this.keys.ArrowRight) this.playerBall.x += speed;
             if (this.keys.ArrowUp) this.playerBall.y -= speed;
             if (this.keys.ArrowDown) this.playerBall.y += speed;
         }
-
-        // הגבלת תנועה בתוך המסך (קוד קיים)
+    
+        // הגבלת תנועה בתוך המסך
         this.playerBall.x = Math.max(this.playerBall.size, 
             Math.min(this.canvas.width - this.playerBall.size, this.playerBall.x));
         this.playerBall.y = Math.max(this.playerBall.size, 
             Math.min(this.canvas.height - this.playerBall.size, this.playerBall.y));
-
+    
         this.playerBall.rotation += 0.1;
     }
+    
+    updateJoystickPosition(touch) {
+        const dx = touch.clientX - this.joystick.baseX;
+        const dy = touch.clientY - this.joystick.baseY;
+        const distance = Math.min(this.joystick.maxDistance, 
+            Math.sqrt(dx * dx + dy * dy));
+        const angle = Math.atan2(dy, dx);
+    
+        const stickX = Math.cos(angle) * distance;
+        const stickY = Math.sin(angle) * distance;
+    
+        const stick = document.getElementById('joystick-stick');
+        stick.style.transform = `translate(calc(-50% + ${stickX}px), calc(-50% + ${stickY}px))`;
+    
+        // נרמול הערכים בין -1 ל-1
+        this.joystick.stickX = stickX / this.joystick.maxDistance;
+        this.joystick.stickY = stickY / this.joystick.maxDistance;
+    }
+
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
