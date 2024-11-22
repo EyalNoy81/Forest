@@ -9,40 +9,95 @@ body {
     background: #1a1a1a;
     color: white;
     direction: rtl;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    position: fixed;
 }
 
 #game-container {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: #1a1a1a;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 .screen {
     display: none;
     text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
 }
 
 .screen.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#game {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 3px solid #3498db;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+    max-width: 100vw;
+    max-height: 100vh;
+    aspect-ratio: 4/3;
+}
+
+/* מדיה קוורי למסך אנכי */
+@media screen and (orientation: portrait) {
+    #game {
+        width: 100%;
+        height: auto;
+        max-height: 80vh;
+    }
+}
+
+/* מדיה קוורי למסך אופקי */
+@media screen and (orientation: landscape) {
+    #game {
+        height: 100%;
+        width: auto;
+        max-width: 80vw;
+    }
+}
+
+#gameCanvas {
+    background: rgba(44, 62, 80, 0.7);
+    width: 100%;
+    height: 100%;
     display: block;
 }
 
 #menu {
     background: rgba(0, 0, 0, 0.8);
-    padding: 2rem;
+    padding: 1rem;
     border-radius: 1rem;
+    width: 90%;
+    max-width: 400px;
 }
 
 button {
     background: #3498db;
     color: white;
     border: none;
-    padding: 1rem 2rem;
-    margin: 1rem;
+    padding: 0.8rem 1.5rem;
+    margin: 0.5rem;
     border-radius: 0.5rem;
     cursor: pointer;
     transition: background 0.3s;
+    font-size: 1rem;
 }
 
 button:hover {
@@ -50,28 +105,23 @@ button:hover {
 }
 
 .difficulty-select {
-    margin: 2rem 0;
-}
-
-.ball-customization {
     margin: 1rem 0;
 }
 
-#gameCanvas {
-    background: #2c3e50;
-    border-radius: 0.5rem;
+.ball-customization {
+    margin: 0.8rem 0;
 }
 
 #score {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.5rem;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 0.5rem 1rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.2rem;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0.3rem 0.8rem;
     border-radius: 0.5rem;
+    z-index: 1;
 }
-/* ... existing styles ... */
 
 #pause-menu {
     position: fixed;
@@ -88,69 +138,41 @@ button:hover {
 
 .pause-content {
     background: rgba(255, 255, 255, 0.1);
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 1rem;
     backdrop-filter: blur(5px);
+    width: 90%;
+    max-width: 300px;
 }
 
 .level-indicator {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    font-size: 1.5rem;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-}
-#game-container {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #1a1a1a;
-}
-
-.screen {
-    display: none;
-    text-align: center;
-}
-
-.screen.active {
-    display: block;
-}
-
-#game {
-    position: relative;
-    width: 800px;  /* קביעת רוחב קבוע */
-    height: 600px; /* קביעת גובה קבוע */
-    border: 3px solid #3498db;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
-}
-
-#gameCanvas {
-    background: rgba(44, 62, 80, 0.7); /* רקע שקוף יותר */
-    width: 100%;
-    height: 100%;
-}
-
-#score {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.5rem;
+    top: 0.5rem;
+    left: 0.5rem;
+    font-size: 1.2rem;
     background: rgba(0, 0, 0, 0.7);
-    padding: 0.5rem 1rem;
+    padding: 0.3rem 0.8rem;
     border-radius: 0.5rem;
-    z-index: 1;
 }
+
 .exit-btn {
     background: #e74c3c;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .exit-btn:hover {
     background: #c0392b;
+}
+
+/* תיקונים נוספים למכשירים קטנים */
+@media screen and (max-width: 480px) {
+    button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    #score, .level-indicator {
+        font-size: 1rem;
+        padding: 0.2rem 0.6rem;
+    }
 }
