@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balls Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="menu" class="screen active">
+            <h1>Balls Game</h1>
+            <button id="startGame">התחל משחק</button>
+            <div class="difficulty-select">
+                <button data-difficulty="beginner">קל</button>
+                <button data-difficulty="advanced">בינוני</button>
+                <button data-difficulty="expert">קשה</button>
+            </div>
+            <div class="ball-customization">
+                <input type="color" id="ballColor" value="#3498db">
+                <span>בחר צבע כדור</span>
+            </div>
+            <button id="exitGame" class="exit-btn">יציאה מהמשחק</button>
+        </div>
+
+        <div id="game" class="screen">
+            <div id="score">גודל: <span id="size">20</span></div>
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div id="game-over" class="screen">
+            <h2>המשחק נגמר!</h2>
+            <p>הגודל הסופי: <span id="finalSize">0</span></p>
+            <button id="restartGame">שחק שוב</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
